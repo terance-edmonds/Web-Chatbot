@@ -1,21 +1,17 @@
 const dialogflow = require('dialogflow');
 const uuid = require('uuid');
-const path = require("path");
-const fs = require("fs-extra")
 require('dotenv').config()
 
 const chatbot = async (req, res) => {
     try {
         const userData = req.body;
 
-        const pathToCredentials = './credentials/'+userData.chatbotId+'.json'
-        const fullPath = path.resolve(pathToCredentials);
-        const jsonData = await fs.readJSON(fullPath)
+        userData.credentials = JSON.parse(userData.credentials)
 
         let config = {
             credentials: {
-                private_key: jsonData.private_key,
-                client_email: jsonData.client_email
+                private_key: userData.credentials.private_key,
+                client_email: userData.credentials.client_email
             }
         }
         // A unique identifier for the given session
@@ -23,7 +19,7 @@ const chatbot = async (req, res) => {
         
         // Create a new session
         const sessionClient = new dialogflow.SessionsClient(config);
-        const sessionPath = sessionClient.sessionPath(userData.chatbotId, sessionId);
+        const sessionPath = sessionClient.sessionPath(userData.credentials.project_id, sessionId);
         
         // The text query request.
         const request = {

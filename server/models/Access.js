@@ -13,7 +13,7 @@ const schema1 = Joi.object().keys({
     id: Joi.number().integer().required(),
     email: Joi.string().required(),
     token: Joi.string().required(),
-    chatbotId: Joi.string().required()
+    credentials: Joi.string().required()
 })
 
 const schema3 = Joi.object().keys({
@@ -50,7 +50,7 @@ router.post("/chatbot", (req, res) => {
                     if(result != ''){
                         let data = {
                             body: {
-                                chatbotId: result[0].chatbotID,
+                                credentials: result[0].credentials,
                                 message: userData.message
                             }
                         }
@@ -78,9 +78,8 @@ router.post("/chatbot", (req, res) => {
 
 router.post("/allowAccess", (req, res) => {
     try {
-
         const userData = req.body;
-
+        
         //validate request data
         const validation_result = schema1.validate(userData);
         if (validation_result.error) {
@@ -119,13 +118,14 @@ router.post("/allowAccess", (req, res) => {
 
         //allow access to the given site
         function grantAccess() {
+
             pool.query(
-                `insert into users (id, email, token, chatbotID) values (?,?,?,?)`,
+                `insert into users (id, email, token, credentials) values (?,?,?,?)`,
                 [
                     userData.id,
                     userData.email,
                     userData.token,
-                    userData.chatbotId
+                    userData.credentials
                 ],
                 (error, result) => {
                     if(error){
@@ -190,11 +190,11 @@ router.post("/updateAccess", (req, res) => {
         }
 
         pool.query(
-            `update users set email=?, token=?, chatbotID=? where id=?`,
+            `update users set email=?, token=?, credentials=? where id=?`,
             [
                 userData.email,
                 userData.token,
-                userData.chatbotId,
+                userData.credentials,
                 userData.id,
             ],
             (error, result) => {
@@ -281,6 +281,13 @@ router.post("/accessList", (req, res) => {
                     });
                 }else{
                     if(result != ''){
+
+                        result.forEach(data => {
+                            if(data.credentials != ''){
+                                data.credentials = JSON.parse(data.credentials)
+                            }
+                        })
+
                         return res.status(200).json({
                             status: "success",
                             data: result

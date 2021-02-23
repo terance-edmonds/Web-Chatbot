@@ -65,9 +65,9 @@ function handleTextInput(id){
     let textbox1 = document.getElementById('id_textbox-'+id)
     let textbox2 = document.getElementById('token_textbox-'+id)
     let textbox3 = document.getElementById('email_textbox-'+id)
-    let textbox4 = document.getElementById('chatbotId_textbox-'+id)
+    let label = document.getElementById('credentials_label-'+id).textContent
 
-    if(textbox2.defaultValue == '' || textbox3.defaultValue == ''|| textbox4.defaultValue == ''){
+    if(textbox2.defaultValue == '' || textbox3.defaultValue == '' || label == 'Select file'){
         document.getElementById('update-'+id).style.visibility = 'hidden'
         document.getElementById('delete-'+id).style.visibility = 'visible'
     }else{
@@ -75,7 +75,7 @@ function handleTextInput(id){
         document.getElementById('update-'+id).style.visibility = 'visible'
     }
 
-    if(textbox1.defaultValue == textbox1.value && textbox2.defaultValue == textbox2.value && textbox3.defaultValue == textbox3.value && textbox4.defaultValue == textbox4.value){
+    if(textbox1.defaultValue == textbox1.value && textbox2.defaultValue == textbox2.value && textbox3.defaultValue == textbox3.value && label == "Select file"){
         document.getElementById('update-'+id).style.visibility = 'hidden'
         document.getElementById('delete-'+id).style.visibility = 'visible'
     }
@@ -85,42 +85,49 @@ function handleTextInput(id){
 function handleUpdate(id) {
     let token = document.getElementById('token_textbox-'+id).value
     let email = document.getElementById('email_textbox-'+id).value
-    let chatbotId = document.getElementById('chatbotId_textbox-'+id).value
+    let file = document.getElementById('credentials_textbox-'+id).files[0]
+    let label = document.getElementById('credentials_label-'+id).textContent
 
-    if(token != '' && email != '' && validateEmail(email) == true){
-        fetch(IndexServerUrl+"/api/updateAccess", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: id,
-                token: token,
-                email: email,
-                chatbotId: chatbotId,
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            handleNotification(data.status, data.message)
-    
-            if(data.status == 'success'){
-                document.getElementById('token_textbox-'+id).defaultValue = document.getElementById('token_textbox-'+id).value
-                document.getElementById('email_textbox-'+id).defaultValue = document.getElementById('email_textbox-'+id).value
-                document.getElementById('chatbotId_textbox-'+id).defaultValue = document.getElementById('chatbotId_textbox-'+id).value
-                document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
+    if(token != '' && email != '' && validateEmail(email) == true && label != 'Select file'){
+        var reader = new FileReader();
+        reader.onload = onReaderLoad;
+        reader.readAsText(file);
 
-                document.getElementById('update-'+id).style.visibility = 'hidden'
-                document.getElementById('delete-'+id).style.visibility = 'visible'
-            }
-        })
+        function onReaderLoad(event){
+            
+                fetch(IndexServerUrl+"/api/updateAccess", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        token: token,
+                        email: email,
+                        credentials: event.target.result
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    handleNotification(data.status, data.message)
+            
+                    if(data.status == 'success'){
+                        document.getElementById('token_textbox-'+id).defaultValue = document.getElementById('token_textbox-'+id).value
+                        document.getElementById('email_textbox-'+id).defaultValue = document.getElementById('email_textbox-'+id).value
+                        document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
+        
+                        document.getElementById('update-'+id).style.visibility = 'hidden'
+                        document.getElementById('delete-'+id).style.visibility = 'visible'
+                    }
+                })
+        }
     }
-    else if (token == '' || email == '' || chatbotId == ''){
-       handleNotification('failed', 'All fields are required')
-    }
-    else if(token != '' && email != '' && chatbotId != '' && validateEmail(email) == false){
-       handleNotification('failed', 'Email is not valid')
-    }
+    else if (token == '' || email == '' || label == 'Select file'){
+        handleNotification('failed', 'All fields are required')
+     }
+     else if(token != '' && email != '' && validateEmail(email) == false && label != 'Select file'){
+        handleNotification('failed', 'Email is not valid')
+     }
 }
 
 //delete record
@@ -172,45 +179,52 @@ function validateEmail(email) {
 function handleInsert(id) {
     let token = document.getElementById('token_textbox-'+id).value
     let email = document.getElementById('email_textbox-'+id).value
-    let chatbotId = document.getElementById('chatbotId_textbox-'+id).value
-
-    if(token != '' && email != '' && validateEmail(email) == true){
-         fetch(IndexServerUrl+"/api/allowAccess", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                id: id,
-                token: token,
-                email: email,
-                chatbotId: chatbotId
-            }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            handleNotification(data.status, data.message)
-
-            if(data.status == 'success'){
-                document.getElementById('token_textbox-'+id).defaultValue = document.getElementById('token_textbox-'+id).value
-                document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
-                document.getElementById('chatbotId_textbox-'+id).defaultValue = document.getElementById('chatbotId_textbox-'+id).value
-                document.getElementById('email_textbox-'+id).defaultValue = document.getElementById('email_textbox-'+id).value
+    let file = document.getElementById('credentials_textbox-'+id).files[0]
+    let label = document.getElementById('credentials_label-'+id).textContent
     
-                document.getElementById('insert-'+id).remove()
-                document.getElementById('update-'+id).classList.remove('chatbot_admin__insert-new')
-                document.getElementById('delete-'+id).classList.remove('chatbot_admin__insert-new')
-                document.getElementById('update-'+id).classList.add('chatbot_admin__button')
-                document.getElementById('delete-'+id).classList.add('chatbot_admin__button')
-                document.getElementById('chatbot_admin_new-data-'+id).classList.remove('chatbot_admin__new-data')
-            }
-        })
+    if(token != '' && email != '' && validateEmail(email) == true && label != 'Select file'){
+        var reader = new FileReader();
+        reader.onload = onReaderLoad;
+        reader.readAsText(file);
+
+        function onReaderLoad(event){
+            
+                fetch(IndexServerUrl+"/api/allowAccess", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id: id,
+                    token: token,
+                    email: email,
+                    credentials: event.target.result
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                handleNotification(data.status, data.message)
+    
+                if(data.status == 'success'){
+                    document.getElementById('token_textbox-'+id).defaultValue = document.getElementById('token_textbox-'+id).value
+                    document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
+                    document.getElementById('email_textbox-'+id).defaultValue = document.getElementById('email_textbox-'+id).value
+        
+                    document.getElementById('insert-'+id).remove()
+                    document.getElementById('update-'+id).classList.remove('chatbot_admin__insert-new')
+                    document.getElementById('delete-'+id).classList.remove('chatbot_admin__insert-new')
+                    document.getElementById('update-'+id).classList.add('chatbot_admin__button')
+                    document.getElementById('delete-'+id).classList.add('chatbot_admin__button')
+                    document.getElementById('chatbot_admin_new-data-'+id).classList.remove('chatbot_admin__new-data')
+                }
+            })
+        }
     }
-    else if (token == '' || email == '' || chatbotId == ''){
-       handleNotification('failed', 'All fields are required')
+    else if (token == '' || email == '' || label == 'Select file'){
+            handleNotification('failed', 'All fields are required')
     }
-    else if(token != '' && email != '' && chatbotId != '' && validateEmail(email) == false){
-       handleNotification('failed', 'Email is not valid')
+    else if(token != '' && email != '' && validateEmail(email) == false && label != 'Select file'){
+            handleNotification('failed', 'Email is not valid')
     }
 }
 
@@ -237,6 +251,23 @@ function handleNotification(event, message) {
     }, 4000);
 }
 
+//handle file input
+function handleFileInput(id) {
+    let fileInput = document.getElementById('credentials_textbox-'+id);
+    fileInput.addEventListener('change', (e) => {
+
+        let [file] = e.target.files;
+        fileInput.files = e.target.files
+        let { name: fileName } = file;
+
+        document.getElementById('credentials_label-'+id).style.backgroundColor = '#7873f5'
+        document.getElementById('credentials_label-'+id).textContent = fileName;
+
+        handleTextInput(id)
+    });
+}
+
+
 //handle new record
 function handleNewRecord(){
     document.getElementById('chatbot_admin__row-nodata').style.display = 'none';
@@ -256,9 +287,12 @@ function handleNewRecord(){
                 <input id="id_textbox-${data.message}" oninput="handleTextInput(${data.message})" type="text" class="chatbot_admin__data" value="${data.message}"/>
                 <input id="email_textbox-${data.message}" oninput="handleTextInput(${data.message})" type="email" class="chatbot_admin__data"/>
                 <input id="token_textbox-${data.message}" oninput="handleTextInput(${data.message})" type="text" class="chatbot_admin__data"/>
-                <input id="chatbotId_textbox-${data.message}" oninput="handleTextInput(${data.message})" type="text" class="chatbot_admin__data"/>
+                <div class="chatbot_admin__data">
+                    <input id="credentials_textbox-${data.message}" oninput="handleTextInput(${data.message})" onclick="handleFileInput(${data.message})" type="file" class="chatbot_admin__file-input"/>
+                    <label for="credentials_textbox-${data.message}" id="credentials_label-${data.message}">Select file</label>    
+                </div>
                 <div class="chatbot_admin__data chatbot_admin__new-data" id="chatbot_admin_new-data-${data.message}">
-                    <button id="insert-${data.message}" onclick="handleInsert(${data.message})" class="chatbot_admin__insert-button chatbot_admin__insert-new">Insert</button>
+                    <button id="insert-${data.message}" onclick="handleInsert(${data.message})" class="chatbot_admin__insert-button chatbot_admin__insert-new">Upload</button>
                     <button id="update-${data.message}" onclick="handleUpdate(${data.message})" class="chatbot_admin__update-button chatbot_admin__insert-new">Update</button>
                     <button id="delete-${data.message}" onclick="handleDelete(${data.message})" class="chatbot_admin__delete-button chatbot_admin__insert-new">Delete</button>
                 </div>
@@ -289,7 +323,10 @@ function getData() {
                     <input id="id_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" type="text" class="chatbot_admin__data" value="${subdata.id}"/>
                     <input id="email_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" type="email" class="chatbot_admin__data" value="${subdata.email}"/>
                     <input id="token_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" type="text" class="chatbot_admin__data" value="${subdata.token}"/>
-                    <input id="chatbotId_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" type="text" class="chatbot_admin__data" value="${subdata.chatbotID}"/>
+                    <div class="chatbot_admin__data">
+                        <input id="credentials_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" onclick="handleFileInput(${subdata.id})" type="file" class="chatbot_admin__file-input"/>
+                        <label for="credentials_textbox-${subdata.id}" id="credentials_label-${subdata.id}" style="background-color: #7873f5;">${subdata.credentials.project_id}.json</label>    
+                    </div>
                     <div class="chatbot_admin__data">
                         <button id="update-${subdata.id}" onclick="handleUpdate(${subdata.id})" class="chatbot_admin__update-button chatbot_admin__button">Update</button>
                         <button id="delete-${subdata.id}" onclick="handleDelete(${subdata.id})" class="chatbot_admin__delete-button chatbot_admin__button">Delete</button>
