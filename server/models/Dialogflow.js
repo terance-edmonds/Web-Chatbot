@@ -1,30 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const Joi = require('joi')
 const dialogflow = require('dialogflow');
 const uuid = require('uuid');
 require('dotenv').config()
 
-const schema = Joi.object().keys({
-    message: Joi.string().required(),
-})
-
 const projectId = process.env.PROJECTID
 
-router.post("/", async (req, res) => {
+const chatbot = async (req, res) => {
     try {
 
         const userData = req.body;
-        
-        //validate request data
-        const validation_result = schema.validate(userData);
-        if (validation_result.error) {
-            var error_message = validation_result.error.details[0].message.replace(/"/g, '');
-            return res.status(400).json({
-                status: "failed",
-                error: error_message
-            })
-        }
     
         // A unique identifier for the given session
         const sessionId = uuid.v4();
@@ -42,10 +25,9 @@ router.post("/", async (req, res) => {
                 text: userData.message,
                 // The language used by the client (en-US)
                 languageCode: 'en-US',
-            },
+                },
             },
         };
-        
         // Send request and log result
         const responses = await sessionClient.detectIntent(request);
         //console.log('Detected intent');
@@ -54,7 +36,7 @@ router.post("/", async (req, res) => {
         
         //console.log(`  Query: ${result.queryText}`);
         //console.log(`  Response: ${result.fulfillmentText}`);
-        
+
         if (result.intent) {
             return res.status(200).json({
                 status: "success",
@@ -62,10 +44,10 @@ router.post("/", async (req, res) => {
             });
         } else {
             return res.status(200).json({
-                status: "success",
+                status: "failed",
                 response: 'Sorry! nothing found on that.'
             });
-        }
+        }   
         
     } catch (error) {
         return res.status(500).json({
@@ -74,6 +56,6 @@ router.post("/", async (req, res) => {
             error: error
         })
     }
-})
+}
 
-module.exports = router;
+module.exports = chatbot;

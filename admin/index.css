@@ -1,0 +1,304 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Nunito', sans-serif;
+    overflow: hidden;
+    perspective: 800px;
+    background: rgb(36, 40, 44);
+}
+
+#chatbot_admin__container{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgb(36, 40, 44);
+    color: #fff;
+    transition: all 1s ease;
+}
+
+.chatbot_admin__container-disabled{
+    transform: scale(1.1) translateY(20px);
+    pointer-events: none;
+    filter: blur(7px) drop-shadow(0px 0px 0px black);
+    box-shadow: 0 0 2000px 2000px #01181E;
+}
+
+#chatbot_admin__title{
+    font-size: 3rem;
+    text-align: center;
+    margin-top: 5vh;
+    margin-bottom: 5vh;
+}
+
+#chatbot_admin__table{
+    width: 80vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.chatbot_admin__row{
+    background: rgb(52, 58, 63);
+    display: grid;
+    grid-template-columns: 20% 40% 40%;
+    text-align: center;
+    margin-top: 2vh;
+    border-radius: 5px;
+    box-shadow: 0px 4px 5px rgb(0, 0, 0, 0.2);
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+}
+.chatbot_admin__header{
+    font-weight: 700;
+    padding: 15px;
+}
+
+.chatbot_admin__data{
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    outline: none;
+    border: 0;
+    background: transparent;
+    text-align: center;
+    color: #fff;
+}
+
+.chatbot_admin__button{
+    width: 70px;
+    height: 25px;
+    outline: 0;
+    border: 0;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: absolute;
+}
+
+.chatbot_admin__delete-button{
+    background: #FF3C3C;
+}
+.chatbot_admin__update-button{
+    background: #FFC300;
+    visibility: hidden;
+}
+
+.chatbot_admin__insert-new{
+    width: 70px;
+    height: 25px;
+    outline: 0;
+    border: 0;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chatbot_admin__insert-button{
+    background: #2DCC05;
+}
+
+.chatbot_admin__new-data{
+    display: flex;
+    flex-direction: column;
+}
+
+#chatbot_admin__add-button{
+    background: #2DCC05;
+    color: #fff;
+    padding: 5px 10px 5px 10px;
+    font-weight: 700;
+    width: max-content;
+    display: flex;
+    align-self: flex-end;
+    border-radius: 7px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#chatbot_admin__alert{
+    border: 1px solid;
+    color: #fff;
+    padding: 5px 20px 5px 20px;
+    font-weight: 700;
+    width: max-content;
+    display: flex;
+    align-self: flex-start;
+    position: absolute;
+    border-radius: 5px;
+    margin-left: 10px;
+    transform: translateY(60px);
+    z-index: 1;
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.chatbot_admin__button:active, #chatbot_admin__add-button:active, .chatbot_admin__insert-new:active{
+    transform: scale(0.8);
+}
+
+#chatbot_admin__row-nodata{
+    padding: 7px 7px 7px 20px;
+    background: rgb(52, 58, 63, 0.4);
+    display: initial;
+    text-align: center;
+    margin-top: 2vh;
+    border-radius: 5px;
+    box-shadow: 0px 4px 5px rgb(0, 0, 0, 0.2);
+}
+
+/* access panel */
+#chatbot_admin__access-panel{
+    position: absolute;
+    z-index: 10;
+    background: #F6F6FF;
+    padding: 3vw 5vw 3vw 5vw;
+    margin-top: 2vh;
+    border-radius: 7px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chatbot_admin__access-textbox{
+    outline: none;
+    border: 1px solid #0081D7;
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    margin-top: 1vh;
+    width: 20vw;
+}
+
+
+#chatbot_admin__access-password{
+    margin-top: 5vh;
+}
+
+.swing-in-top-fwd{
+	-webkit-animation: swing-in-top-fwd 0.7s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
+	        animation: swing-in-top-fwd 0.7s cubic-bezier(0.175, 0.885, 0.320, 1.275) both;
+}
+
+ @-webkit-keyframes swing-in-top-fwd {
+    0% {
+      -webkit-transform: rotateX(-100deg);
+              transform: rotateX(-100deg);
+      -webkit-transform-origin: top;
+              transform-origin: top;
+      opacity: 0;
+    }
+    100% {
+      -webkit-transform: rotateX(0deg);
+              transform: rotateX(0deg);
+      -webkit-transform-origin: top;
+              transform-origin: top;
+      opacity: 1;
+    }
+  }
+  @keyframes swing-in-top-fwd {
+    0% {
+      -webkit-transform: rotateX(-100deg);
+              transform: rotateX(-100deg);
+      -webkit-transform-origin: top;
+              transform-origin: top;
+      opacity: 0;
+    }
+    100% {
+      -webkit-transform: rotateX(0deg);
+              transform: rotateX(0deg);
+      -webkit-transform-origin: top;
+              transform-origin: top;
+      opacity: 1;
+    }
+  }
+
+.swing-out-top-bck {
+	-webkit-animation: swing-out-top-bck 0.5s cubic-bezier(0.600, -0.280, 0.735, 0.045) both;
+	        animation: swing-out-top-bck 0.5s cubic-bezier(0.600, -0.280, 0.735, 0.045) both;
+}
+
+
+@-webkit-keyframes swing-out-top-bck {
+  0% {
+    -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg);
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: rotateX(-100deg);
+            transform: rotateX(-100deg);
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    opacity: 0;
+  }
+}
+@keyframes swing-out-top-bck {
+  0% {
+    -webkit-transform: rotateX(0deg);
+            transform: rotateX(0deg);
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: rotateX(-100deg);
+            transform: rotateX(-100deg);
+    -webkit-transform-origin: top;
+            transform-origin: top;
+    opacity: 0;
+  }
+}
+
+  
+
+#chatbot_admin__access-submit{
+    color: #fff;
+    background: #50C700;
+    text-align: center;
+    margin-top: 5vh;
+    padding: 7px 30px 7px 30px;
+    align-self: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+#chatbot_admin__access-submit:active{
+    transform: scale(0.8);
+}
+
+@media screen and (max-width: 1080px){
+    /* access panel */
+    .chatbot_admin__access-textbox{
+        width: 60vw;
+    }
+
+    #chatbot_admin__access-submit:active{
+        transform: scale(0.95);
+    }
+
+}

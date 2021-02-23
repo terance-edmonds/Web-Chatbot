@@ -1,3 +1,5 @@
+const chatbotServerUrl = "http://localhost:4000";
+
 function checkConnection() {
     if(document.getElementById('chatbot__container-wrapper') != null){
         if(navigator.onLine ){
@@ -27,19 +29,24 @@ function handleInput() {
         document.getElementById('chatbot__input').value = '';
 
         scrollDown();
- 
-            fetch("http://localhost:4000/api/chatbot", {
+        
+            fetch(chatbotServerUrl+"/api/chatbot", {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    token: window.location.host,
                     message: input
                 }),
             })
             .then(response => response.json())
             .then(data => {
-                container.innerHTML += `<p class="chatbot__response chatbot__message">${data.response}</p>`;
+                if(data.response != undefined){
+                    container.innerHTML += `<p class="chatbot__response chatbot__message">${data.response}</p>`;
+                }else{
+                    container.innerHTML += `<p class="chatbot__response chatbot__message">Something went wrong.</p>`;
+                }
                 scrollDown();
             })
     }
@@ -63,15 +70,6 @@ function handleChatbot() {
 }
 
 function addChatbotCss(){
-/*     let head  = document.getElementsByTagName('head')[0];
-    let link  = document.createElement('link');
-    link.id   = 'chatbot__cssId';
-    link.rel  = 'stylesheet';
-    link.type = 'text/css';
-    link.href = './chatbot__style.css';
-    link.media = 'all';
-    head.appendChild(link); */
-
     document.head.innerHTML += `
         <style id="chatbot__style.css">
             #chatbot__container-wrapper{
@@ -304,10 +302,12 @@ async function createChatbot(){
     addChatbotCss();
 
         //load the chatbot
-         document.body.innerHTML += `    
+         document.body.innerHTML += `
          <div id="chatbot__container-wrapper">
              <div id="chatbot__container">
-                 <div id="chatbot__message-container"></div>
+                 <div id="chatbot__message-container">
+                    <p class="chatbot__response chatbot__message">Greetings! How can I help you?</p>
+                 </div>
      
                  <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                      onclick="handleInput()"
