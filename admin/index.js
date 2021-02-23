@@ -22,11 +22,20 @@ function handleLogin() {
                 document.getElementById('chatbot_admin__access-panel').classList.remove('swing-in-top-fwd')
                 document.getElementById('chatbot_admin__access-panel').classList.add('swing-out-top-bck')
                 document.getElementById('chatbot_admin__container').classList.remove('chatbot_admin__container-disabled')
-            }
-            else{
-                //
+            }else{
+                document.getElementById('chatbot_admin__access-submit').classList.remove('chatbot_admin__access-submit-active')
+                document.getElementById('chatbot_admin__access-submit').classList.add('chatbot_admin__access-submit-disable')
+                document.getElementById('chatbot_admin__access-submit').innerText = 'Access Denied'
             }
         })
+    }
+}
+
+function handleUserInput() {
+    if(document.getElementById('chatbot_admin__access-submit').classList.contains('chatbot_admin__access-submit-disable')){
+        document.getElementById('chatbot_admin__access-submit').classList.remove('chatbot_admin__access-submit-disable')
+        document.getElementById('chatbot_admin__access-submit').classList.add('chatbot_admin__access-submit-active')
+        document.getElementById('chatbot_admin__access-submit').innerText = 'Login'
     }
 }
 
@@ -34,12 +43,20 @@ addEventListener('keydown', (event) => {
     let user = document.getElementById('chatbot_admin__access-username-textbox').value
     let pwd = document.getElementById('chatbot_admin__access-password-textbox').value
 
-    if(event.keyCode == 13 && user != '' && pwd != ''){
+    if(event.keyCode == 9 && document.getElementById('chatbot_admin__container').classList.contains('chatbot_admin__container-disabled')){
+        event.preventDefault()
+
+        if(document.activeElement.id == 'chatbot_admin__access-username-textbox'){
+            document.getElementById('chatbot_admin__access-password-textbox').select()
+        }else{
+            document.getElementById('chatbot_admin__access-username-textbox').select()
+        }
+    }
+
+    if(event.keyCode == 13 && user != '' && pwd != '' && document.getElementById('chatbot_admin__access-submit').classList.contains('chatbot_admin__access-submit-active')){
         handleLogin()
     }
 })
-
-
 
 //ADMIN PANEL
 
@@ -47,8 +64,10 @@ addEventListener('keydown', (event) => {
 function handleTextInput(id){
     let textbox1 = document.getElementById('id_textbox-'+id)
     let textbox2 = document.getElementById('token_textbox-'+id)
+    let textbox3 = document.getElementById('email_textbox-'+id)
+    let textbox4 = document.getElementById('chatbotId_textbox-'+id)
 
-    if(textbox2.defaultValue == ''){
+    if(textbox2.defaultValue == '' || textbox3.defaultValue == ''|| textbox4.defaultValue == ''){
         document.getElementById('update-'+id).style.visibility = 'hidden'
         document.getElementById('delete-'+id).style.visibility = 'visible'
     }else{
@@ -56,7 +75,7 @@ function handleTextInput(id){
         document.getElementById('update-'+id).style.visibility = 'visible'
     }
 
-    if(textbox1.defaultValue == textbox1.value && textbox2.defaultValue == textbox2.value){
+    if(textbox1.defaultValue == textbox1.value && textbox2.defaultValue == textbox2.value && textbox3.defaultValue == textbox3.value && textbox4.defaultValue == textbox4.value){
         document.getElementById('update-'+id).style.visibility = 'hidden'
         document.getElementById('delete-'+id).style.visibility = 'visible'
     }
@@ -64,30 +83,44 @@ function handleTextInput(id){
 
 //update record
 function handleUpdate(id) {
-    document.getElementById('update-'+id).style.visibility = 'hidden'
-    document.getElementById('delete-'+id).style.visibility = 'visible'
-
     let token = document.getElementById('token_textbox-'+id).value
+    let email = document.getElementById('email_textbox-'+id).value
+    let chatbotId = document.getElementById('chatbotId_textbox-'+id).value
 
-    fetch(IndexServerUrl+"/api/updateAccess", {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            id: id,
-            token: token,
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        handleNotification(data.status, data.message)
+    if(token != '' && email != '' && validateEmail(email) == true){
+        fetch(IndexServerUrl+"/api/updateAccess", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: id,
+                token: token,
+                email: email,
+                chatbotId: chatbotId,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            handleNotification(data.status, data.message)
+    
+            if(data.status == 'success'){
+                document.getElementById('token_textbox-'+id).defaultValue = document.getElementById('token_textbox-'+id).value
+                document.getElementById('email_textbox-'+id).defaultValue = document.getElementById('email_textbox-'+id).value
+                document.getElementById('chatbotId_textbox-'+id).defaultValue = document.getElementById('chatbotId_textbox-'+id).value
+                document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
 
-        if(data.status == 'success'){
-            document.getElementById('token_textbox-'+id).defaultValue = document.getElementById('token_textbox-'+id).value
-            document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
-        }
-    })
+                document.getElementById('update-'+id).style.visibility = 'hidden'
+                document.getElementById('delete-'+id).style.visibility = 'visible'
+            }
+        })
+    }
+    else if (token == '' || email == '' || chatbotId == ''){
+       handleNotification('failed', 'All fields are required')
+    }
+    else if(token != '' && email != '' && chatbotId != '' && validateEmail(email) == false){
+       handleNotification('failed', 'Email is not valid')
+    }
 }
 
 //delete record
@@ -115,7 +148,7 @@ function handleDelete(id) {
     
 }
 
-function dataExist(callback) {
+function dataExist() {
     fetch(IndexServerUrl+"/api/nextId", {
         method: "POST",
         headers: {
@@ -130,11 +163,18 @@ function dataExist(callback) {
     })
 }
 
+function validateEmail(email) {
+    let re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 //add record
 function handleInsert(id) {
     let token = document.getElementById('token_textbox-'+id).value
+    let email = document.getElementById('email_textbox-'+id).value
+    let chatbotId = document.getElementById('chatbotId_textbox-'+id).value
 
-    if(token != ''){
+    if(token != '' && email != '' && validateEmail(email) == true){
          fetch(IndexServerUrl+"/api/allowAccess", {
             method: "POST",
             headers: {
@@ -143,22 +183,34 @@ function handleInsert(id) {
             body: JSON.stringify({
                 id: id,
                 token: token,
+                email: email,
+                chatbotId: chatbotId
             }),
         })
         .then(response => response.json())
         .then(data => {
             handleNotification(data.status, data.message)
 
-            document.getElementById('token_textbox-'+id).defaultValue = document.getElementById('token_textbox-'+id).value
-            document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
-
-            document.getElementById('insert-'+id).remove()
-            document.getElementById('update-'+id).classList.remove('chatbot_admin__insert-new')
-            document.getElementById('delete-'+id).classList.remove('chatbot_admin__insert-new')
-            document.getElementById('update-'+id).classList.add('chatbot_admin__button')
-            document.getElementById('delete-'+id).classList.add('chatbot_admin__button')
-            document.getElementById('chatbot_admin_new-data-'+id).classList.remove('chatbot_admin__new-data')
+            if(data.status == 'success'){
+                document.getElementById('token_textbox-'+id).defaultValue = document.getElementById('token_textbox-'+id).value
+                document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
+                document.getElementById('chatbotId_textbox-'+id).defaultValue = document.getElementById('chatbotId_textbox-'+id).value
+                document.getElementById('email_textbox-'+id).defaultValue = document.getElementById('email_textbox-'+id).value
+    
+                document.getElementById('insert-'+id).remove()
+                document.getElementById('update-'+id).classList.remove('chatbot_admin__insert-new')
+                document.getElementById('delete-'+id).classList.remove('chatbot_admin__insert-new')
+                document.getElementById('update-'+id).classList.add('chatbot_admin__button')
+                document.getElementById('delete-'+id).classList.add('chatbot_admin__button')
+                document.getElementById('chatbot_admin_new-data-'+id).classList.remove('chatbot_admin__new-data')
+            }
         })
+    }
+    else if (token == '' || email == '' || chatbotId == ''){
+       handleNotification('failed', 'All fields are required')
+    }
+    else if(token != '' && email != '' && chatbotId != '' && validateEmail(email) == false){
+       handleNotification('failed', 'Email is not valid')
     }
 }
 
@@ -202,7 +254,9 @@ function handleNewRecord(){
             document.getElementById('chatbot_admin__table').innerHTML += `
             <div class="chatbot_admin__row" id="chatbot_admin_row-container-${data.message}">
                 <input id="id_textbox-${data.message}" oninput="handleTextInput(${data.message})" type="text" class="chatbot_admin__data" value="${data.message}"/>
+                <input id="email_textbox-${data.message}" oninput="handleTextInput(${data.message})" type="email" class="chatbot_admin__data"/>
                 <input id="token_textbox-${data.message}" oninput="handleTextInput(${data.message})" type="text" class="chatbot_admin__data"/>
+                <input id="chatbotId_textbox-${data.message}" oninput="handleTextInput(${data.message})" type="text" class="chatbot_admin__data"/>
                 <div class="chatbot_admin__data chatbot_admin__new-data" id="chatbot_admin_new-data-${data.message}">
                     <button id="insert-${data.message}" onclick="handleInsert(${data.message})" class="chatbot_admin__insert-button chatbot_admin__insert-new">Insert</button>
                     <button id="update-${data.message}" onclick="handleUpdate(${data.message})" class="chatbot_admin__update-button chatbot_admin__insert-new">Update</button>
@@ -211,7 +265,7 @@ function handleNewRecord(){
             </div>`
         }
 
-        document.getElementById('token_textbox-'+data.message).select();
+        document.getElementById('email_textbox-'+data.message).select();
     })
 }
 
@@ -233,7 +287,9 @@ function getData() {
                 document.getElementById('chatbot_admin__table').innerHTML += `
                 <div class="chatbot_admin__row" id="chatbot_admin_row-container-${subdata.id}">
                     <input id="id_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" type="text" class="chatbot_admin__data" value="${subdata.id}"/>
+                    <input id="email_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" type="email" class="chatbot_admin__data" value="${subdata.email}"/>
                     <input id="token_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" type="text" class="chatbot_admin__data" value="${subdata.token}"/>
+                    <input id="chatbotId_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" type="text" class="chatbot_admin__data" value="${subdata.chatbotID}"/>
                     <div class="chatbot_admin__data">
                         <button id="update-${subdata.id}" onclick="handleUpdate(${subdata.id})" class="chatbot_admin__update-button chatbot_admin__button">Update</button>
                         <button id="delete-${subdata.id}" onclick="handleDelete(${subdata.id})" class="chatbot_admin__delete-button chatbot_admin__button">Delete</button>

@@ -11,12 +11,9 @@ const schema = Joi.object().keys({
 
 const schema1 = Joi.object().keys({
     id: Joi.number().integer().required(),
-    token: Joi.string().required()
-})
-
-const schema2 = Joi.object().keys({
-    id: Joi.number().integer().required(),
-    token: Joi.string().required()
+    email: Joi.string().required(),
+    token: Joi.string().required(),
+    chatbotId: Joi.string().required()
 })
 
 const schema3 = Joi.object().keys({
@@ -25,7 +22,6 @@ const schema3 = Joi.object().keys({
 
 router.post("/chatbot", (req, res) => {
     try {
-
         const userData = req.body;
 
         //validate request data
@@ -52,7 +48,14 @@ router.post("/chatbot", (req, res) => {
                     });
                 }else{
                     if(result != ''){
-                        chatbot(req, res)
+                        let data = {
+                            body: {
+                                chatbotId: result[0].chatbotID,
+                                message: userData.message
+                            }
+                        }
+
+                        chatbot(data, res)
                     }else{
                         return res.status(401).json({
                             status: "failed",
@@ -117,10 +120,12 @@ router.post("/allowAccess", (req, res) => {
         //allow access to the given site
         function grantAccess() {
             pool.query(
-                `insert into users (id, token) values (?,?)`,
+                `insert into users (id, email, token, chatbotID) values (?,?,?,?)`,
                 [
                     userData.id,
-                    userData.token
+                    userData.email,
+                    userData.token,
+                    userData.chatbotId
                 ],
                 (error, result) => {
                     if(error){
@@ -175,7 +180,7 @@ router.post("/updateAccess", (req, res) => {
         const userData = req.body;
 
         //validate request data
-        const validation_result = schema2.validate(userData);
+        const validation_result = schema1.validate(userData);
         if (validation_result.error) {
             var error_message = validation_result.error.details[0].message.replace(/"/g, '');
             return res.status(400).json({
@@ -185,10 +190,12 @@ router.post("/updateAccess", (req, res) => {
         }
 
         pool.query(
-            `update users set token=? where id=?`,
+            `update users set email=?, token=?, chatbotID=? where id=?`,
             [
+                userData.email,
                 userData.token,
-                userData.id
+                userData.chatbotId,
+                userData.id,
             ],
             (error, result) => {
                 if(error){

@@ -55,7 +55,7 @@ body{
 .chatbot_admin__row{
     background: rgb(52, 58, 63);
     display: grid;
-    grid-template-columns: 20% 40% 40%;
+    grid-template-columns: 20% 20% 20% 20% 20%;
     text-align: center;
     margin-top: 2vh;
     border-radius: 5px;
@@ -178,6 +178,7 @@ body{
     border-radius: 7px;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 5px 10px rgb(0, 0, 0);
 }
 
 .chatbot_admin__access-textbox{
@@ -270,12 +271,10 @@ body{
     opacity: 0;
   }
 }
-
   
 
 #chatbot_admin__access-submit{
     color: #fff;
-    background: #50C700;
     text-align: center;
     margin-top: 5vh;
     padding: 7px 30px 7px 30px;
@@ -287,7 +286,16 @@ body{
     letter-spacing: 1px;
 }
 
-#chatbot_admin__access-submit:active{
+.chatbot_admin__access-submit-active{
+    background-color: rgb(80, 199, 0);
+}
+
+.chatbot_admin__access-submit-disable{
+    background-color: rgb(255, 60, 60);
+    pointer-events: none;
+}
+
+.chatbot_admin__access-submit-active:active{
     transform: scale(0.8);
 }
 
