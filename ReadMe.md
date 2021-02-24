@@ -12,9 +12,9 @@
 
 4. Download the **.json** file and include the following in it
 
-    * **name: chatbot name**
-    * **apiEndPoint: api end point (eg: us-central1-dialogflow.googleapis.com)**
-    * **agent_Id: project/PROJECT_ID/location/AGENT_LOCATION/agents/AGENT_ID**
+    * **name:** *chatbot name*
+    * **apiEndPoint:** *api end point (eg: us-central1-dialogflow.googleapis.com)*
+    * **agent_Id:** *project/PROJECT_ID/location/AGENT_LOCATION/agents/AGENT_ID*
 
 5. After thats done Go to **Chatbot Admin Panel Website**  Add a new record, fill all the fields, upload the **.json** file and click on upload button
 
