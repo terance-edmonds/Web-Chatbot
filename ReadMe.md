@@ -4,9 +4,11 @@
 
 1. Create project in dialogflow cx
 
-2. Create an agent in your project and copy the ID of the agent (eg: project/PROJECT_ID/location/AGENT_LOCATION/agents/AGENT_ID)
+2. Create an agent in your project and copy the ID of the agent <br/>
+(eg: project/PROJECT_ID/location/AGENT_LOCATION/agents/AGENT_ID)
 
-3. Get a service account key for the relevant chatbot (eg: https://console.cloud.google.com/iam-admin/serviceaccounts?project=chatbot-tbqu)
+3. Get a service account key for the relevant chatbot <br/>
+(eg: https://console.cloud.google.com/iam-admin/serviceaccounts?project=chatbot-tbqu)
 
 4. Download the *.json* file and include the following in it
 
