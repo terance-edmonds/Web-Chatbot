@@ -80,6 +80,12 @@ function addChatbotCss(){
                 align-items: baseline;
                 max-width: max-content;
                 z-index: 100;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
             }
             
             #chatbot__icon{
@@ -293,6 +299,27 @@ function addChatbotCss(){
             #chatbot__send-icon:active{
                 transform: scale(0.8);
             }
+
+            @media screen and (max-width: 750px){
+                #chatbot__icon{
+                    width: 50px;
+                    height: 50px; 
+                }
+
+                #chatbot__container{
+                    height: 400px;
+                    width: 250px;
+                }
+                
+                #chatbot__message-container{
+                    font-family:Arial, Helvetica, sans-serif;
+                    position: absolute;
+                    height: 360px;
+                    width: 250px;
+                    font-size: 0.7rem;
+                }
+            }
+
         </style>
     `
 }

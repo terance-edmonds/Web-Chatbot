@@ -22,6 +22,9 @@ function handleLogin() {
                 document.getElementById('chatbot_admin__access-panel').classList.remove('swing-in-top-fwd')
                 document.getElementById('chatbot_admin__access-panel').classList.add('swing-out-top-bck')
                 document.getElementById('chatbot_admin__container').classList.remove('chatbot_admin__container-disabled')
+                setTimeout(() => {
+                    document.getElementById('chatbot_admin__access-panel').style.display = 'none'
+                }, 600);
             }else{
                 document.getElementById('chatbot_admin__access-submit').classList.remove('chatbot_admin__access-submit-active')
                 document.getElementById('chatbot_admin__access-submit').classList.add('chatbot_admin__access-submit-disable')
@@ -65,19 +68,18 @@ function handleTextInput(id){
     let textbox1 = document.getElementById('id_textbox-'+id)
     let textbox2 = document.getElementById('token_textbox-'+id)
     let textbox3 = document.getElementById('email_textbox-'+id)
-    let label = document.getElementById('credentials_label-'+id).textContent
 
-    if(textbox2.defaultValue == '' || textbox3.defaultValue == '' || label == 'Select file'){
-        document.getElementById('update-'+id).style.visibility = 'hidden'
-        document.getElementById('delete-'+id).style.visibility = 'visible'
+    if(textbox2.defaultValue == '' || textbox3.defaultValue == ''){
+        document.getElementById('update-'+id).style.display = 'none'
+        document.getElementById('delete-'+id).style.display = 'flex'
     }else{
-        document.getElementById('delete-'+id).style.visibility = 'hidden'
-        document.getElementById('update-'+id).style.visibility = 'visible'
+        document.getElementById('delete-'+id).style.display = 'none'
+        document.getElementById('update-'+id).style.display = 'flex'
     }
 
-    if(textbox1.defaultValue == textbox1.value && textbox2.defaultValue == textbox2.value && textbox3.defaultValue == textbox3.value && label == "Select file"){
-        document.getElementById('update-'+id).style.visibility = 'hidden'
-        document.getElementById('delete-'+id).style.visibility = 'visible'
+    if(textbox1.defaultValue == textbox1.value && textbox2.defaultValue == textbox2.value && textbox3.defaultValue == textbox3.value){
+        document.getElementById('update-'+id).style.display = 'none'
+        document.getElementById('delete-'+id).style.display = 'flex'
     }
 }
 
@@ -86,9 +88,8 @@ function handleUpdate(id) {
     let token = document.getElementById('token_textbox-'+id).value
     let email = document.getElementById('email_textbox-'+id).value
     let file = document.getElementById('credentials_textbox-'+id).files[0]
-    let label = document.getElementById('credentials_label-'+id).textContent
 
-    if(token != '' && email != '' && validateEmail(email) == true && label != 'Select file'){
+    if(token != '' && email != '' && validateEmail(email) == true){
         var reader = new FileReader();
         reader.onload = onReaderLoad;
         reader.readAsText(file);
@@ -116,16 +117,16 @@ function handleUpdate(id) {
                         document.getElementById('email_textbox-'+id).defaultValue = document.getElementById('email_textbox-'+id).value
                         document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
         
-                        document.getElementById('update-'+id).style.visibility = 'hidden'
-                        document.getElementById('delete-'+id).style.visibility = 'visible'
+                        document.getElementById('update-'+id).style.display = 'none'
+                        document.getElementById('delete-'+id).style.display = 'flex'
                     }
                 })
         }
     }
-    else if (token == '' || email == '' || label == 'Select file'){
+    else if (token == '' || email == ''){
         handleNotification('failed', 'All fields are required')
      }
-     else if(token != '' && email != '' && validateEmail(email) == false && label != 'Select file'){
+     else if(token != '' && email != '' && validateEmail(email) == false){
         handleNotification('failed', 'Email is not valid')
      }
 }
@@ -257,13 +258,34 @@ function handleFileInput(id) {
     fileInput.addEventListener('change', (e) => {
 
         let [file] = e.target.files;
-        fileInput.files = e.target.files
-        let { name: fileName } = file;
 
-        document.getElementById('credentials_label-'+id).style.backgroundColor = '#7873f5'
-        document.getElementById('credentials_label-'+id).textContent = fileName;
+         var reader = new FileReader();
+        reader.onload = onReaderLoad;
+        reader.readAsText(e.target.files[0]);
 
-        handleTextInput(id)
+        function onReaderLoad(event){
+            let jsonFile = JSON.parse(event.target.result)
+
+            if(jsonFile.name != undefined && jsonFile.name != '' && jsonFile.apiEndPoint != undefined && jsonFile.apiEndPoint != '' && jsonFile.agent_Id != undefined && jsonFile.agent_Id != ''){
+                fileInput.files = e.target.files
+                let { name: fileName } = file;
+        
+                document.getElementById('credentials_label-'+id).style.backgroundColor = '#7873f5'
+                document.getElementById('credentials_label-'+id).textContent = fileName;
+        
+                document.getElementById('delete-'+id).style.display = 'none'
+                document.getElementById('update-'+id).style.display = 'flex'
+            }
+            else if(jsonFile.name == undefined || jsonFile.name == ''){
+                handleNotification('failed', 'name is required in json file')
+            }
+            else if(jsonFile.apiEndPoint == undefined || jsonFile.apiEndPoint == ''){
+                handleNotification('failed', 'apiEndPoint is required in json file')
+            }
+            else if(jsonFile.agent_Id == undefined || jsonFile.agent_Id == ''){
+                handleNotification('failed', 'agent_Id is required in json file')
+            }
+        }
     });
 }
 
@@ -325,7 +347,7 @@ function getData() {
                     <input id="token_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" type="text" class="chatbot_admin__data" value="${subdata.token}"/>
                     <div class="chatbot_admin__data">
                         <input id="credentials_textbox-${subdata.id}" oninput="handleTextInput(${subdata.id})" onclick="handleFileInput(${subdata.id})" type="file" class="chatbot_admin__file-input"/>
-                        <label for="credentials_textbox-${subdata.id}" id="credentials_label-${subdata.id}" style="background-color: #7873f5;">${subdata.credentials.project_id}.json</label>    
+                        <label for="credentials_textbox-${subdata.id}" id="credentials_label-${subdata.id}" style="background-color: #7873f5;">${subdata.credentials.name}</label>    
                     </div>
                     <div class="chatbot_admin__data">
                         <button id="update-${subdata.id}" onclick="handleUpdate(${subdata.id})" class="chatbot_admin__update-button chatbot_admin__button">Update</button>

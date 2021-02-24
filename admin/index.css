@@ -64,6 +64,13 @@ body{
     align-items: center;
     z-index: 2;
 }
+
+.chatbot_admin__row-status{
+    display: flex;
+    width: 100%;
+    height: 25px;
+}
+
 .chatbot_admin__header{
     font-weight: 700;
     padding: 15px;
@@ -91,7 +98,9 @@ body{
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
-    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .chatbot_admin__delete-button{
@@ -99,7 +108,7 @@ body{
 }
 .chatbot_admin__update-button{
     background: #FFC300;
-    visibility: hidden;
+    display: none;
 }
 
 .chatbot_admin__insert-new{
@@ -116,6 +125,7 @@ body{
 
 .chatbot_admin__insert-button{
     background: #2DCC05;
+    margin-bottom: 2vh;
 }
 
 .chatbot_admin__new-data{
@@ -129,12 +139,12 @@ body{
     padding: 5px 10px 5px 10px;
     font-weight: 700;
     width: max-content;
-    display: flex;
-    align-self: flex-end;
     border-radius: 7px;
     margin-right: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
+    position: fixed;
+    right: 10vw;
 }
 
 #chatbot_admin__alert{
@@ -143,15 +153,14 @@ body{
     padding: 5px 20px 5px 20px;
     font-weight: 700;
     width: max-content;
-    display: flex;
     align-self: flex-start;
-    position: absolute;
     border-radius: 5px;
     margin-left: 10px;
     transform: translateY(60px);
     z-index: 1;
     opacity: 0;
     transition: all 0.5s ease;
+    position: absolute;
 }
 
 .chatbot_admin__button:active, #chatbot_admin__add-button:active, .chatbot_admin__insert-new:active{
@@ -327,6 +336,30 @@ body{
 }
 
 @media screen and (max-width: 1080px){
+
+    /* admin panel */
+    #chatbot_admin__container {
+        overflow: hidden;
+    }
+
+    #chatbot_admin__alert{
+        font-size: 0.9rem;
+    }
+
+    #chatbot_admin__table{
+        height: 80vh;
+        width: 90vw;
+        overflow: auto;
+    }
+
+    #chatbot_admin__title{
+        font-size: 1.5rem;
+    }
+
+    .chatbot_admin__row{
+        width: 250%;
+    }
+
     /* access panel */
     .chatbot_admin__access-textbox{
         width: 60vw;
