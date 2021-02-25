@@ -45,6 +45,11 @@ const chatbot = async (req, res) => {
         //console.log('Detected intent');
         const result = rawData[0].queryResult;
         const response = result.responseMessages[0].text.text[0]
+        const end_flow = result.currentPage.displayName
+
+        if(end_flow != undefined && end_flow != '' && end_flow == 'End Session'){
+            //console.log(end_flow)
+        }
 
         if (result.intent) {
             return res.status(200).json({

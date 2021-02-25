@@ -30,7 +30,7 @@ router.post("/chatbot", (req, res) => {
             var error_message = validation_result.error.details[0].message.replace(/"/g, '');
             return res.status(400).json({
                 status: "failed",
-                error: error_message
+                message: error_message
             })
         }
 
@@ -86,7 +86,7 @@ router.post("/allowAccess", (req, res) => {
             var error_message = validation_result.error.details[0].message.replace(/"/g, '');
             return res.status(400).json({
                 status: "failed",
-                error: error_message
+                message: error_message
             })
         }
 
@@ -185,7 +185,7 @@ router.post("/updateAccess", (req, res) => {
             var error_message = validation_result.error.details[0].message.replace(/"/g, '');
             return res.status(400).json({
                 status: "failed",
-                error: error_message
+                message: error_message
             })
         }
 
@@ -233,7 +233,7 @@ router.post("/denyAccess", (req, res) => {
             var error_message = validation_result.error.details[0].message.replace(/"/g, '');
             return res.status(400).json({
                 status: "failed",
-                error: error_message
+                message: error_message
             })
         }
 

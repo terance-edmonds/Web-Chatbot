@@ -20,7 +20,7 @@ body{
     background: rgb(36, 40, 44);
 }
 
-#chatbot_admin__container{
+#chatbot_sub_admin__container{
     position: absolute;
     width: 100vw;
     height: 100vh;
@@ -32,61 +32,27 @@ body{
     transition: all 1s ease;
 }
 
-.chatbot_admin__container-disabled{
+.chatbot_sub_admin__container-disabled{
     transform: scale(1.1) translateY(20px);
     pointer-events: none;
     filter: blur(7px) drop-shadow(0px 0px 0px black);
     box-shadow: 0 0 2000px 2000px #01181E;
 }
 
-#chatbot_admin__top-container{
-    display: flex;
-    width: 95%;
-    justify-content: center;
-}
-
-#chatbot_admin__access-profile{
-    position: absolute;
-    right: 2vw;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    margin-right: 3vw;
-    align-self: center;
-}
-
-#chatbot_admin__access-admin{
-    position: absolute;
-    right: 2vw;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    margin-right: 7vw;
-    align-self: center;
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 5px;
-    display: none;
-}
-
-
-#chatbot_admin__access-profile:active, #chatbot_admin__access-admin:active{
-    transform: scale(0.8);
-}
-
-#chatbot_admin__title{
+#chatbot_sub_admin__title{
     font-size: 3rem;
+    text-align: center;
     margin-top: 5vh;
     margin-bottom: 5vh;
 }
 
-#chatbot_admin__table{
+#chatbot_sub_admin__table{
     width: 80vw;
     display: flex;
     flex-direction: column;
 }
 
-.chatbot_admin__row{
+.chatbot_sub_admin__row{
     background: rgb(52, 58, 63);
     display: grid;
     grid-template-columns: 10% 22.5% 22.5% 22.5% 22.5%;
@@ -99,18 +65,18 @@ body{
     z-index: 2;
 }
 
-.chatbot_admin__row-status{
+.chatbot_sub_admin__row-status{
     display: flex;
     width: 100%;
     height: 25px;
 }
 
-.chatbot_admin__header{
+.chatbot_sub_admin__header{
     font-weight: 700;
     padding: 15px;
 }
 
-.chatbot_admin__data{
+.chatbot_sub_admin__data{
     padding: 15px;
     display: flex;
     justify-content: center;
@@ -122,7 +88,7 @@ body{
     color: #fff;
 }
 
-.chatbot_admin__button{
+.chatbot_sub_admin__button{
     width: 70px;
     height: 25px;
     outline: 0;
@@ -137,15 +103,15 @@ body{
     align-items: center;
 }
 
-.chatbot_admin__delete-button{
+.chatbot_sub_admin__delete-button{
     background: #FF3C3C;
 }
-.chatbot_admin__update-button{
+.chatbot_sub_admin__update-button{
     background: #FFC300;
     display: none;
 }
 
-.chatbot_admin__insert-new{
+.chatbot_sub_admin__insert-new{
     width: 70px;
     height: 25px;
     outline: 0;
@@ -157,17 +123,17 @@ body{
     transition: all 0.2s ease;
 }
 
-.chatbot_admin__insert-button{
+.chatbot_sub_admin__insert-button{
     background: #2DCC05;
     margin-bottom: 2vh;
 }
 
-.chatbot_admin__new-data{
+.chatbot_sub_admin__new-data{
     display: flex;
     flex-direction: column;
 }
 
-#chatbot_admin__add-button{
+#chatbot_sub_admin__add-button{
     background: #2DCC05;
     color: #fff;
     padding: 5px 10px 5px 10px;
@@ -181,7 +147,7 @@ body{
     right: 10vw;
 }
 
-#chatbot_admin__alert{
+#chatbot_sub_admin__alert{
     border: 1px solid;
     color: #fff;
     padding: 5px 20px 5px 20px;
@@ -197,11 +163,11 @@ body{
     position: absolute;
 }
 
-.chatbot_admin__button:active, #chatbot_admin__add-button:active, .chatbot_admin__insert-new:active{
+.chatbot_sub_admin__button:active, #chatbot_sub_admin__add-button:active, .chatbot_sub_admin__insert-new:active{
     transform: scale(0.8);
 }
 
-#chatbot_admin__row-nodata{
+#chatbot_sub_admin__row-nodata{
     padding: 7px 7px 7px 20px;
     background: rgb(52, 58, 63, 0.4);
     display: initial;
@@ -211,14 +177,14 @@ body{
     box-shadow: 0px 4px 5px rgb(0, 0, 0, 0.2);
 }
 
-.chatbot_admin__file-input {
+.chatbot_sub_admin__file-input {
     opacity: 0;
     width: 0.1px;
     height: 0.1px;
     position: absolute;
 }
 
-.chatbot_admin__data label {
+.chatbot_sub_admin__data label {
     display: block;
     position: relative;
     width: max-content;
@@ -234,75 +200,12 @@ body{
     transition: transform 0.2s ease;
 }
 
-.chatbot_admin__file-input + label:active{
+.chatbot_sub_admin__file-input + label:active{
     transform: scale(0.8);
 }
 
-
-#chatbot_admin__profile-container{
-    background-color: #F6F6FF;
-    padding: 3vh 5vw 3vh 5vw;
-    display: none;
-    flex-direction: column;
-    box-shadow: 0 5px 10px rgb(0, 0, 0);
-    position: absolute;
-    color: #000;
-    border-radius: 7px;
-    z-index: 10;
-    margin-top: 2vh;
-}
-
-#chatbot_admin__profile-container *{
-    margin-top: 1vh;
-    margin-bottom: 1vh;
-}
-#chatbot_admin__profile-container input{
-    outline: none;
-    border: 1px solid #0081D7;
-    padding: 5px 10px 5px 10px;
-    border-radius: 5px;
-    margin-top: 1vh;
-    width: 20vw;
-}
-
-#chatbot_admin__profile-password-wrapper{
-    display: flex;
-    flex-direction: column;
-}
-
-#chatbot_admin__profile-exit{
-    padding: 2px 7px 2px 7px;
-    border-radius: 50%;
-    background-color: #FF3C3C;
-    position: absolute;
-    right: 20px;
-    top: 10px;
-    cursor: pointer;
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 700;
-}
-
-.chatbot_admin__profile-update{
-    border: 0;
-    color: #fff;
-    font-weight: 700;
-    width: max-content;
-    border-radius: 5px;
-    padding: 5px 10px 5px 10px;
-    align-self: center;
-    cursor: pointer;
-}
-
-.chatbot_admin__profile-update:active{
-    transform: scale(0.8);
-}
-
-
-/* login panel */
-#chatbot_admin__access-panel{
+/* access panel */
+#chatbot_sub_admin__access-panel{
     position: absolute;
     z-index: 10;
     background: #F6F6FF;
@@ -314,7 +217,7 @@ body{
     box-shadow: 0 5px 10px rgb(0, 0, 0);
 }
 
-.chatbot_admin__access-textbox{
+.chatbot_sub_admin__access-textbox{
     outline: none;
     border: 1px solid #0081D7;
     padding: 5px 10px 5px 10px;
@@ -324,7 +227,7 @@ body{
 }
 
 
-#chatbot_admin__access-password{
+#chatbot_sub_admin__access-password{
     margin-top: 5vh;
 }
 
@@ -406,7 +309,7 @@ body{
 }
   
 
-#chatbot_admin__access-submit{
+#chatbot_sub_admin__access-submit{
     color: #fff;
     text-align: center;
     margin-top: 5vh;
@@ -419,79 +322,50 @@ body{
     letter-spacing: 1px;
 }
 
-.chatbot_admin__access-submit-active{
+.chatbot_sub_admin__access-submit-active{
     background-color: rgb(80, 199, 0);
 }
 
-.chatbot_admin__access-submit-disable{
+.chatbot_sub_admin__access-submit-disable{
     background-color: rgb(255, 60, 60);
     pointer-events: none;
 }
 
-.chatbot_admin__access-submit-active:active{
+.chatbot_sub_admin__access-submit-active:active{
     transform: scale(0.8);
 }
 
 @media screen and (max-width: 1080px){
 
-    /* access panel */
-    #chatbot_admin__container {
+    /* admin panel */
+    #chatbot_sub_admin__container {
         overflow: hidden;
     }
 
-    #chatbot_admin__alert{
+    #chatbot_sub_admin__alert{
         font-size: 0.9rem;
     }
 
-    #chatbot_admin__table{
+    #chatbot_sub_admin__table{
         height: 80vh;
         width: 90vw;
         overflow: auto;
     }
 
-    #chatbot_admin__top-container{
-        display: flex;
-        justify-content: space-between;
+    #chatbot_sub_admin__title{
+        font-size: 1.5rem;
     }
 
-    #chatbot_admin__title{
-        margin-left: 2vw;
-        font-size: 1rem;
-    }
-
-    .chatbot_admin__row{
+    .chatbot_sub_admin__row{
         width: 250%;
     }
 
-    #chatbot_admin__access-profile{
-        width: 35px;
-        height: 35px;
-    }
-    
-    #chatbot_admin__access-admin{
-        width: 35px;
-        height: 35px;
-        margin-right: 20vw;
-    }
-
-    #chatbot_admin__access-profile:active, #chatbot_admin__access-admin:active{
-        transform: scale(0.9);
-    }
-
-    #chatbot_admin__profile-container{
-        width: 80vw;
-    }
-
-    #chatbot_admin__profile-container input{
-        width: 70vw;
-    }
-
-    /* login panel */
-    .chatbot_admin__access-textbox{
+    /* access panel */
+    .chatbot_sub_admin__access-textbox{
         width: 60vw;
     }
 
-    #chatbot_admin__access-submit:active{
+    #chatbot_sub_admin__access-submit:active{
         transform: scale(0.95);
     }
 

@@ -57,15 +57,21 @@ function handleChatbot() {
     let textbox = document.getElementById('chatbot__input')
 
     if(container.style.transform == 'scale(0)' || container.style.transform == ''){
-        container.style.transform = 'scale(1)'
-        container.style.borderRadius = '7px'
-        container.style.opacity = '1'
-        textbox.select();
+        container.style.display = 'block'
+        setTimeout(() => {
+            container.style.transform = 'scale(1)'
+            container.style.borderRadius = '7px'
+            container.style.opacity = '1'
+            textbox.select();
+        }, 10);
     }
     else{
         container.style.transform = 'scale(0)'
         container.style.borderRadius = '50%'
         container.style.opacity = '0'
+        setTimeout(() => {
+            container.style.display = 'none'
+        }, 310); 
     }
 }
 
@@ -168,6 +174,7 @@ function addChatbotCss(){
             
             
             #chatbot__container{
+                display: none;
                 font-family:Arial, Helvetica, sans-serif;
                 height: 400px;
                 width: 300px;

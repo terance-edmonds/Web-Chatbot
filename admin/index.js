@@ -1,4 +1,5 @@
 const IndexServerUrl = "http://localhost:4000";
+var userId = 0;
 
 //ACCESS PANEL
 function handleLogin() {
@@ -19,6 +20,17 @@ function handleLogin() {
         .then(response => response.json())
         .then(data => {
             if(data.login){
+
+                if(data.role == 'super_admin'){
+                    document.getElementById('chatbot_admin__access-admin').style.display = 'block'
+                }else{
+                    document.getElementById('chatbot_admin__access-admin').style.display = 'none'
+                }
+
+                userId = data.id
+                document.getElementById('chatbot_admin__profile-username').defaultValue = data.username
+                document.getElementById('chatbot_admin__profile-email').defaultValue = data.email
+
                 document.getElementById('chatbot_admin__access-panel').classList.remove('swing-in-top-fwd')
                 document.getElementById('chatbot_admin__access-panel').classList.add('swing-out-top-bck')
                 document.getElementById('chatbot_admin__container').classList.remove('chatbot_admin__container-disabled')
@@ -42,11 +54,12 @@ function handleUserInput() {
     }
 }
 
+//handle key down
 addEventListener('keydown', (event) => {
     let user = document.getElementById('chatbot_admin__access-username-textbox').value
     let pwd = document.getElementById('chatbot_admin__access-password-textbox').value
 
-    if(event.keyCode == 9 && document.getElementById('chatbot_admin__container').classList.contains('chatbot_admin__container-disabled')){
+    if(event.keyCode == 9 && document.getElementById('chatbot_admin__container').classList.contains('chatbot_admin__container-disabled') && document.getElementById('chatbot_admin__access-panel').style.display != 'none'){
         event.preventDefault()
 
         if(document.activeElement.id == 'chatbot_admin__access-username-textbox'){
@@ -55,13 +68,140 @@ addEventListener('keydown', (event) => {
             document.getElementById('chatbot_admin__access-username-textbox').select()
         }
     }
+    else if(event.keyCode == 9 && document.getElementById('chatbot_admin__container').classList.contains('chatbot_admin__container-disabled') && document.getElementById('chatbot_admin__profile-container').style.display != 'none'){
+        //const inputTxtboxList = ['chatbot_admin__profile-username', 'chatbot_admin__profile-email', 'chatbot_admin__profile-password', 'chatbot_admin__profile-cpassword']
 
-    if(event.keyCode == 13 && user != '' && pwd != '' && document.getElementById('chatbot_admin__access-submit').classList.contains('chatbot_admin__access-submit-active')){
+        if(document.activeElement.id == 'chatbot_admin__profile-cpassword'){
+            event.preventDefault()
+            document.getElementById('chatbot_admin__profile-username').select()
+        }
+    }
+
+    if(event.keyCode == 13 && user != '' && pwd != '' && document.getElementById('chatbot_admin__access-submit').classList.contains('chatbot_admin__access-submit-active') && document.getElementById('chatbot_admin__access-panel').style.display != 'none'){
         handleLogin()
     }
 })
 
 //ADMIN PANEL
+
+//handle profile
+function handleProfile() {
+    let profile_container = document.getElementById('chatbot_admin__profile-container')
+    
+    profile_container.style.display = 'flex'
+    profile_container.classList.remove('swing-out-top-bck')
+    profile_container.classList.add('swing-in-top-fwd')
+    document.getElementById('chatbot_admin__container').classList.add('chatbot_admin__container-disabled')
+}
+
+function handleProfileExit() {
+    let profile_container = document.getElementById('chatbot_admin__profile-container')
+
+    profile_container.classList.remove('swing-in-top-fwd')
+    profile_container.classList.add('swing-out-top-bck')
+    setTimeout(() => {
+        profile_container.style.display = 'none'
+    }, 500);
+    document.getElementById('chatbot_admin__container').classList.remove('chatbot_admin__container-disabled')
+}
+
+function handleProfileTextInput1() {
+    if(document.getElementById('chatbot_admin__profile-update-content').classList.contains('chatbot_admin__access-submit-disable')){
+        document.getElementById('chatbot_admin__profile-update-content').classList.remove('chatbot_admin__access-submit-disable')
+        document.getElementById('chatbot_admin__profile-update-content').classList.add('chatbot_admin__access-submit-active')
+        document.getElementById('chatbot_admin__profile-update-content').innerText = 'Update'
+    }
+}
+
+function handleProfileTextInput2() {
+    if(document.getElementById('chatbot_admin__profile-update-password').classList.contains('chatbot_admin__access-submit-disable')){
+        document.getElementById('chatbot_admin__profile-update-password').classList.remove('chatbot_admin__access-submit-disable')
+        document.getElementById('chatbot_admin__profile-update-password').classList.add('chatbot_admin__access-submit-active')
+        document.getElementById('chatbot_admin__profile-update-password').innerText = 'Update'
+    }
+}
+
+function handleProfileUpdateContent() {
+
+    let username = document.getElementById('chatbot_admin__profile-username')
+    let email = document.getElementById('chatbot_admin__profile-email')
+
+    if(username.value != username.defaultValue || email.value != email.defaultValue){
+
+        fetch(IndexServerUrl+"/api/admin/updateAdminProfile", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: userId,
+                email: email.value,
+                username: username.value
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status == 'success'){
+                
+                username.defaultValue = username.value
+                email.defaultValue = email.value
+
+                document.getElementById('chatbot_admin__profile-update-content').innerText = data.message
+    
+                setTimeout(() => {
+                    document.getElementById('chatbot_admin__profile-update-content').innerText = 'Update'
+                }, 1500);
+            }else{
+                document.getElementById('chatbot_admin__profile-update-content').classList.remove('chatbot_admin__access-submit-active')
+                document.getElementById('chatbot_admin__profile-update-content').classList.add('chatbot_admin__access-submit-disable')
+                document.getElementById('chatbot_admin__profile-update-content').innerText = data.message
+            }
+        })
+    }
+}
+
+function handleProfileUpdatePwd() {
+    
+    let pwd = document.getElementById('chatbot_admin__profile-password')
+    let Cpwd = document.getElementById('chatbot_admin__profile-cpassword')
+
+    if(pwd.value == Cpwd.value){
+
+        fetch(IndexServerUrl+"/api/admin/updateAdminPwd", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: userId,
+                password: pwd.value
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status == 'success'){
+
+                pwd.value = ''
+                Cpwd.value = ''
+
+                document.getElementById('chatbot_admin__profile-update-password').innerText = data.message
+    
+                setTimeout(() => {
+                    document.getElementById('chatbot_admin__profile-update-password').innerText = 'Update'
+                }, 1500);
+            }else{
+                document.getElementById('chatbot_admin__profile-update-password').classList.remove('chatbot_admin__access-submit-active')
+                document.getElementById('chatbot_admin__profile-update-password').classList.add('chatbot_admin__access-submit-disable')
+                document.getElementById('chatbot_admin__profile-update-password').innerText = data.message
+            }
+        })
+    }
+    else{
+        document.getElementById('chatbot_admin__profile-update-password').classList.remove('chatbot_admin__access-submit-active')
+        document.getElementById('chatbot_admin__profile-update-password').classList.add('chatbot_admin__access-submit-disable')
+        document.getElementById('chatbot_admin__profile-update-password').innerText = "Passwords dosen't match"
+    }
+}
 
 //handle on text input
 function handleTextInput(id){
@@ -71,7 +211,7 @@ function handleTextInput(id){
 
     if(textbox2.defaultValue == '' || textbox3.defaultValue == ''){
         document.getElementById('update-'+id).style.display = 'none'
-        document.getElementById('delete-'+id).style.display = 'flex'
+        document.getElementById('delete-'+id).style.display = 'block'
     }else{
         document.getElementById('delete-'+id).style.display = 'none'
         document.getElementById('update-'+id).style.display = 'flex'
@@ -79,7 +219,7 @@ function handleTextInput(id){
 
     if(textbox1.defaultValue == textbox1.value && textbox2.defaultValue == textbox2.value && textbox3.defaultValue == textbox3.value){
         document.getElementById('update-'+id).style.display = 'none'
-        document.getElementById('delete-'+id).style.display = 'flex'
+        document.getElementById('delete-'+id).style.display = 'block'
     }
 }
 
@@ -118,7 +258,7 @@ function handleUpdate(id) {
                         document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
         
                         document.getElementById('update-'+id).style.display = 'none'
-                        document.getElementById('delete-'+id).style.display = 'flex'
+                        document.getElementById('delete-'+id).style.display = 'block'
                     }
                 })
         }
