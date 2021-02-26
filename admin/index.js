@@ -412,9 +412,11 @@ function handleFileInput(id) {
         
                 document.getElementById('credentials_label-'+id).style.backgroundColor = '#7873f5'
                 document.getElementById('credentials_label-'+id).textContent = fileName;
-        
-                document.getElementById('delete-'+id).style.display = 'none'
-                document.getElementById('update-'+id).style.display = 'flex'
+                
+                if(document.getElementById('update-'+id).classList.contains('chatbot_admin__insert-new') == false){
+                    document.getElementById('delete-'+id).style.display = 'none'
+                    document.getElementById('update-'+id).style.display = 'block'
+                }
             }
             else if(jsonFile.name == undefined || jsonFile.name == ''){
                 handleNotification('failed', 'name is required in json file')

@@ -28,6 +28,18 @@ function handleInput() {
         container.innerHTML += `<p class="chatbot__query chatbot__message">${input}</p>`;
         document.getElementById('chatbot__input').value = '';
 
+        container.innerHTML += `
+        <div id="chatbot_____typing-indicator-wrapper">
+            <div id="chatbot_____typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span id="chatbot_____typing-indicator-1"></span>
+            <span id="chatbot_____typing-indicator-2"></span>
+        </div>
+        `
+
         scrollDown();
         
             fetch(chatbotServerUrl+"/api/chatbot", {
@@ -42,6 +54,7 @@ function handleInput() {
             })
             .then(response => response.json())
             .then(data => {
+                document.getElementById('chatbot_____typing-indicator-wrapper').remove()
                 if(data.response != undefined){
                     container.innerHTML += `<p class="chatbot__response chatbot__message">${data.response}</p>`;
                 }else{
@@ -57,21 +70,114 @@ function handleChatbot() {
     let textbox = document.getElementById('chatbot__input')
 
     if(container.style.transform == 'scale(0)' || container.style.transform == ''){
-        container.style.transform = 'scale(1)'
-        container.style.borderRadius = '7px'
-        container.style.opacity = '1'
-        textbox.select();
+        container.style.display = 'block'
+        setTimeout(() => {
+            container.style.transform = 'scale(1)'
+            container.style.borderRadius = '7px'
+            container.style.opacity = '1'
+            textbox.select();
+        }, 10);
     }
     else{
         container.style.transform = 'scale(0)'
         container.style.borderRadius = '50%'
         container.style.opacity = '0'
+        setTimeout(() => {
+            container.style.display = 'none'
+        }, 310); 
     }
 }
 
 function addChatbotCss(){
     document.head.innerHTML += `
         <style id="chatbot__style.css">
+
+        #chatbot_____typing-indicator-wrapper{
+            display: flex;
+            flex-direction: column;
+            align-self: flex-start;
+            margin-left: 5px;
+            animation: chatbot__till-response;
+            animation-duration: 0.5s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes chatbot__till-response{
+            0%{
+                opacity: 0;
+            }
+            100%{
+                opacity: 1;
+            }
+        }
+        
+        #chatbot_____typing-indicator {
+            background-color: #767676;
+            padding: 7px 5px 7px 5px;
+            width: max-content;
+            display: flex;
+            flex-direction: row;
+            border-radius: 20px;
+        }
+        
+        #chatbot_____typing-indicator-1{
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #767676;
+            margin-top: -9px;
+        }
+        
+        #chatbot_____typing-indicator-2{
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background-color: #767676;
+            margin-top: -1px;
+            margin-left: -3px;
+        }
+        
+        #chatbot_____typing-indicator span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: #dddddd;
+            margin-left: 2px;
+            margin-right: 2px;
+            animation: chatbot_blink_indicator;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+            transition: all 0.2s ease;
+        }
+        
+        #chatbot_____typing-indicator span:nth-child(2){
+            animation: chatbot_blink_indicator;
+            animation-delay: 0.3s;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+        }
+        #chatbot_____typing-indicator span:nth-child(3){
+            animation: chatbot_blink_indicator;
+            animation-delay: 0.6s;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+        }
+        
+        @keyframes chatbot_blink_indicator{
+            0%{
+                opacity: 0.3;
+                transform: translateY(0);
+            }
+            50%{
+                transform: translateY(-1px);
+            }
+            100%{
+                opacity: 1;
+                transform: translateY(-2px);
+            }
+        }
+
+
             #chatbot__container-wrapper{
                 position: absolute;
                 bottom: 2vh;
@@ -80,6 +186,12 @@ function addChatbotCss(){
                 align-items: baseline;
                 max-width: max-content;
                 z-index: 100;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
             }
             
             #chatbot__icon{
@@ -162,6 +274,7 @@ function addChatbotCss(){
             
             
             #chatbot__container{
+                display: none;
                 font-family:Arial, Helvetica, sans-serif;
                 height: 400px;
                 width: 300px;
@@ -293,6 +406,27 @@ function addChatbotCss(){
             #chatbot__send-icon:active{
                 transform: scale(0.8);
             }
+
+            @media screen and (max-width: 750px){
+                #chatbot__icon{
+                    width: 50px;
+                    height: 50px; 
+                }
+
+                #chatbot__container{
+                    height: 400px;
+                    width: 250px;
+                }
+                
+                #chatbot__message-container{
+                    font-family:Arial, Helvetica, sans-serif;
+                    position: absolute;
+                    height: 360px;
+                    width: 250px;
+                    font-size: 0.7rem;
+                }
+            }
+
         </style>
     `
 }
