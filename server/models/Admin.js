@@ -3,6 +3,11 @@ const express = require('express');
 const router = express.Router();
 const Joi = require('joi')
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const authorization = require('../Auth/auth');
+const {secret, encrypt} = require('../config/config')
+const Cryptr = require('cryptr')
+const cryptr = new Cryptr(encrypt);
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -79,8 +84,9 @@ router.post("/signup", (req, res) => {
         //allow access to the given site
         function grantAccess() {
             pool.query(
-                `insert into admin (username, password, email, role) values (?,?,?,?)`,
+                `insert into admin (id, username, password, email, role) values (?,?,?,?,?)`,
                 [
+                    userData.id,
                     userData.username,
                     password,
                     userData.email,
@@ -112,7 +118,7 @@ router.post("/signup", (req, res) => {
     }
 })
 
-router.post("/nextAdminId", (req, res) => {
+router.post("/nextAdminId", authorization ,(req, res) => {
     pool.query(
         `select max(id) from admin`,
         (error, result) => {
@@ -164,6 +170,12 @@ router.post("/login", (req, res) => {
                     if(result != ''){
                         const userResult = bcrypt.compareSync(userData.password, result[0].password);
 
+                        const token = jwt.sign({result: result}, secret, {
+                            expiresIn: "1h" //expires in 1 hour
+                        })
+
+                        const encToken = cryptr.encrypt(token)
+
                         if(userResult){
                             return res.status(200).json({
                                 status: "success",
@@ -171,7 +183,8 @@ router.post("/login", (req, res) => {
                                 role: result[0].role,
                                 id: result[0].id,
                                 username: result[0].username,
-                                email: result[0].email
+                                email: result[0].email,
+                                token: encToken 
                             });
                         }else{
                             return res.status(401).json({
@@ -200,9 +213,8 @@ router.post("/login", (req, res) => {
 })
 
 //update admin
-router.post("/updateAdmin", (req, res) => {
+router.post("/updateAdmin", authorization , (req, res) => {
     try {
-
         const userData = req.body;
 
         //validate request data
@@ -279,7 +291,7 @@ router.post("/updateAdmin", (req, res) => {
 })
 
 //update admin profile
-router.post("/updateAdminProfile", (req, res) => {
+router.post("/updateAdminProfile", authorization , (req, res) => {
     try {
 
         const userData = req.body;
@@ -359,7 +371,7 @@ router.post("/updateAdminProfile", (req, res) => {
 })
 
 //update admin profile password
-router.post("/updateAdminPwd", (req, res) => {
+router.post("/updateAdminPwd", authorization ,(req, res) => {
     try {
 
         const userData = req.body;
@@ -408,7 +420,7 @@ router.post("/updateAdminPwd", (req, res) => {
 })
 
 //delete admin
-router.post("/deleteAdmin", (req, res) => {
+router.post("/deleteAdmin", authorization , (req, res) => {
     try {
 
         const userData = req.body;

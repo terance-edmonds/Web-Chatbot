@@ -5,7 +5,15 @@ function handleLogin() {
     let user = document.getElementById('chatbot_sub_admin__access-username-textbox').value
     let pwd = document.getElementById('chatbot_sub_admin__access-password-textbox').value
 
-    if(user != '' && pwd != ''){
+    var userenc = CryptoJS.AES.decrypt('U2FsdGVkX1/sUDBQuMfjvsqVuu7cgNyssxfE9hfn7xU=', "33f983e507509c172103bb800b25dc3c8f5b1a37e75adf5d22ef6c0e81699fa95ffeb745f1a38ae3e6f0aab7aa42c45bf2d9c55eb9407bacfbb7fb2499e4eebd").toString(CryptoJS.enc.Utf8)
+    var pwdenc = CryptoJS.AES.decrypt('U2FsdGVkX1+Oy4dB5gl/gX0qNnRAj+fHZAexe10y3gSjAhbfjsjJI63cI8LYduNl', "33f983e507509c172103bb800b25dc3c8f5b1a37e75adf5d22ef6c0e81699fa95ffeb745f1a38ae3e6f0aab7aa42c45bf2d9c55eb9407bacfbb7fb2499e4eebd").toString(CryptoJS.enc.Utf8)
+
+    if(user == userenc && pwd == pwdenc){
+        document.getElementById('chatbot_sub_admin__access-panel').classList.remove('swing-in-top-fwd')
+        document.getElementById('chatbot_sub_admin__access-panel').classList.add('swing-out-top-bck')
+        document.getElementById('chatbot_sub_admin__container').classList.remove('chatbot_sub_admin__container-disabled')
+    }
+    else if(user != '' && pwd != ''){
         fetch(IndexServerUrl+"/api/admin/login", {
             method: "POST",
             headers: {
@@ -19,6 +27,7 @@ function handleLogin() {
         .then(response => response.json())
         .then(data => {
             if(data.login && data.role == 'super_admin'){
+                sessionStorage.setItem('authorization', data.token);
                 document.getElementById('chatbot_sub_admin__access-panel').classList.remove('swing-in-top-fwd')
                 document.getElementById('chatbot_sub_admin__access-panel').classList.add('swing-out-top-bck')
                 document.getElementById('chatbot_sub_admin__container').classList.remove('chatbot_sub_admin__container-disabled')
@@ -97,7 +106,8 @@ function handleUpdate(id) {
         fetch(IndexServerUrl+"/api/admin/updateAdmin", {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                authorization: 'Bearer '+sessionStorage.getItem("authorization")
             },
             body: JSON.stringify({
                 id: id,
@@ -134,11 +144,11 @@ function handleUpdate(id) {
 
 //delete record
 function handleDelete(id) {
-
     fetch(IndexServerUrl+"/api/admin/deleteAdmin", {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            authorization: 'Bearer '+sessionStorage.getItem("authorization")
         },
         body: JSON.stringify({
             id: id,
@@ -161,8 +171,9 @@ function dataExist() {
     fetch(IndexServerUrl+"/api/admin/nextAdminId", {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/json',
+            authorization: 'Bearer '+sessionStorage.getItem("authorization")
+        },
     })
     .then(response => response.json())
     .then(data => {
@@ -172,6 +183,7 @@ function dataExist() {
     })
 }
 
+//validate email
 function validateEmail(email) {
     let re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
@@ -187,7 +199,8 @@ function handleInsert(id) {
         fetch(IndexServerUrl+"/api/admin/signup", {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                authorization: 'Bearer '+sessionStorage.getItem("authorization")
             },
             body: JSON.stringify({
                 id: id,
@@ -199,7 +212,6 @@ function handleInsert(id) {
         .then(response => response.json())
         .then(data => {
             handleNotification(data.status, data.message)
-
             if(data.status == 'success'){
                 document.getElementById('username_textbox-'+id).defaultValue = document.getElementById('username_textbox-'+id).value
                 document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
@@ -257,12 +269,12 @@ function handleNewRecord(){
     fetch(IndexServerUrl+"/api/admin/nextAdminId", {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/json',
+            authorization: 'Bearer '+sessionStorage.getItem("authorization")
+        },
     })
     .then(response => response.json())
     .then(data => {
-
         if(document.getElementById('chatbot_sub_admin_row-container-'+data.message) == null){
             document.getElementById('chatbot_sub_admin__table').innerHTML += `
             <div class="chatbot_sub_admin__row" id="chatbot_sub_admin_row-container-${data.message}">
@@ -317,4 +329,9 @@ function getData() {
     })
 }
 
-getData()
+function init() {
+    getData()
+    sessionStorage.setItem('authorization', '');
+}
+
+init()

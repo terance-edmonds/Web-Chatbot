@@ -20,7 +20,7 @@ function handleLogin() {
         .then(response => response.json())
         .then(data => {
             if(data.login){
-
+                sessionStorage.setItem('authorization', data.token);
                 if(data.role == 'super_admin'){
                     document.getElementById('chatbot_admin__access-admin').style.display = 'block'
                 }else{
@@ -131,7 +131,8 @@ function handleProfileUpdateContent() {
         fetch(IndexServerUrl+"/api/admin/updateAdminProfile", {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                authorization: 'Bearer '+sessionStorage.getItem("authorization")
             },
             body: JSON.stringify({
                 id: userId,
@@ -170,7 +171,8 @@ function handleProfileUpdatePwd() {
         fetch(IndexServerUrl+"/api/admin/updateAdminPwd", {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                authorization: 'Bearer '+sessionStorage.getItem("authorization")
             },
             body: JSON.stringify({
                 id: userId,
@@ -208,6 +210,7 @@ function handleTextInput(id){
     let textbox1 = document.getElementById('id_textbox-'+id)
     let textbox2 = document.getElementById('token_textbox-'+id)
     let textbox3 = document.getElementById('email_textbox-'+id)
+    let file = document.getElementById('credentials_textbox-'+id).files[0]
 
     if(textbox2.defaultValue == '' || textbox3.defaultValue == ''){
         document.getElementById('update-'+id).style.display = 'none'
@@ -217,7 +220,7 @@ function handleTextInput(id){
         document.getElementById('update-'+id).style.display = 'flex'
     }
 
-    if(textbox1.defaultValue == textbox1.value && textbox2.defaultValue == textbox2.value && textbox3.defaultValue == textbox3.value){
+    if(textbox1.defaultValue == textbox1.value && textbox2.defaultValue == textbox2.value && textbox3.defaultValue == textbox3.value && file == undefined){
         document.getElementById('update-'+id).style.display = 'none'
         document.getElementById('delete-'+id).style.display = 'block'
     }
@@ -229,7 +232,34 @@ function handleUpdate(id) {
     let email = document.getElementById('email_textbox-'+id).value
     let file = document.getElementById('credentials_textbox-'+id).files[0]
 
-    if(token != '' && email != '' && validateEmail(email) == true){
+    if(token != '' && email != '' && validateEmail(email) == true && file == undefined){
+        fetch(IndexServerUrl+"/api/updateAccessNonCredentials", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+                authorization: 'Bearer '+sessionStorage.getItem("authorization")
+            },
+            body: JSON.stringify({
+                id: id,
+                token: token,
+                email: email
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            handleNotification(data.status, data.message)
+    
+            if(data.status == 'success'){
+                document.getElementById('token_textbox-'+id).defaultValue = document.getElementById('token_textbox-'+id).value
+                document.getElementById('email_textbox-'+id).defaultValue = document.getElementById('email_textbox-'+id).value
+                document.getElementById('id_textbox-'+id).defaultValue = document.getElementById('id_textbox-'+id).value
+
+                document.getElementById('update-'+id).style.display = 'none'
+                document.getElementById('delete-'+id).style.display = 'block'
+            }
+        })
+    }
+    else if(token != '' && email != '' && validateEmail(email) == true && file != undefined){
         var reader = new FileReader();
         reader.onload = onReaderLoad;
         reader.readAsText(file);
@@ -239,7 +269,8 @@ function handleUpdate(id) {
                 fetch(IndexServerUrl+"/api/updateAccess", {
                     method: "POST",
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        authorization: 'Bearer '+sessionStorage.getItem("authorization")
                     },
                     body: JSON.stringify({
                         id: id,
@@ -277,7 +308,8 @@ function handleDelete(id) {
     fetch(IndexServerUrl+"/api/denyAccess", {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            authorization: 'Bearer '+sessionStorage.getItem("authorization")
         },
         body: JSON.stringify({
             id: id,
@@ -300,8 +332,9 @@ function dataExist() {
     fetch(IndexServerUrl+"/api/nextId", {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/json',
+            authorization: 'Bearer '+sessionStorage.getItem("authorization")
+        },
     })
     .then(response => response.json())
     .then(data => {
@@ -333,7 +366,8 @@ function handleInsert(id) {
                 fetch(IndexServerUrl+"/api/allowAccess", {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    authorization: 'Bearer '+sessionStorage.getItem("authorization")
                 },
                 body: JSON.stringify({
                     id: id,
@@ -439,8 +473,9 @@ function handleNewRecord(){
     fetch(IndexServerUrl+"/api/nextId", {
         method: "POST",
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/json',
+            authorization: 'Bearer '+sessionStorage.getItem("authorization")
+        },
     })
     .then(response => response.json())
     .then(data => {

@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const chatbot = require('./Dialogflow')
 const Joi = require('joi')
+const authorization = require('../Auth/auth');
 
 const schema = Joi.object().keys({
     token: Joi.string().required(),
@@ -14,6 +15,12 @@ const schema1 = Joi.object().keys({
     email: Joi.string().required(),
     token: Joi.string().required(),
     credentials: Joi.string().required()
+})
+
+const schema2 = Joi.object().keys({
+    id: Joi.number().integer().required(),
+    email: Joi.string().required(),
+    token: Joi.string().required()
 })
 
 const schema3 = Joi.object().keys({
@@ -76,7 +83,7 @@ router.post("/chatbot", (req, res) => {
 })
 
 
-router.post("/allowAccess", (req, res) => {
+router.post("/allowAccess", authorization ,(req, res) => {
     try {
         const userData = req.body;
         
@@ -153,7 +160,7 @@ router.post("/allowAccess", (req, res) => {
     }
 })
 
-router.post("/nextId", (req, res) => {
+router.post("/nextId", authorization ,(req, res) => {
     pool.query(
         `select max(id) from users`,
         (error, result) => {
@@ -174,7 +181,54 @@ router.post("/nextId", (req, res) => {
     )
 })
 
-router.post("/updateAccess", (req, res) => {
+router.post("/updateAccessNonCredentials", authorization ,(req, res) => {
+    try {
+
+        const userData = req.body;
+
+        //validate request data
+        const validation_result = schema2.validate(userData);
+        if (validation_result.error) {
+            var error_message = validation_result.error.details[0].message.replace(/"/g, '');
+            return res.status(400).json({
+                status: "failed",
+                message: error_message
+            })
+        }
+
+        pool.query(
+            `update users set email=?, token=? where id=?`,
+            [
+                userData.email,
+                userData.token,
+                userData.id,
+            ],
+            (error, result) => {
+                if(error){
+                    return res.status(500).json({
+                        status: "failed",
+                        message: 'Database error',
+                        error: error
+                    });
+                }else{
+                    return res.status(200).json({
+                        status: "success",
+                        message: 'updated successfully'
+                    });
+                } 
+            }
+        )
+
+    } catch (error) {
+        return res.status(500).json({
+            status: "failed",
+            message: "Internal Sever Error",
+            error: error
+        })
+    }
+})
+
+router.post("/updateAccess", authorization ,(req, res) => {
     try {
 
         const userData = req.body;
@@ -222,7 +276,7 @@ router.post("/updateAccess", (req, res) => {
     }
 })
 
-router.post("/denyAccess", (req, res) => {
+router.post("/denyAccess", authorization , (req, res) => {
     try {
 
         const userData = req.body;
