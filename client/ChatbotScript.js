@@ -1,4 +1,4 @@
-const chatbotServerUrl = "http://localhost:4000";
+const chatbotServerUrl = "http://13.250.53.189:4000";
 
 function checkConnection() {
     if(document.getElementById('chatbot__container-wrapper') != null){

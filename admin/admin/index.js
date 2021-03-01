@@ -1,4 +1,4 @@
-const IndexServerUrl = "http://localhost:4000";
+const IndexServerUrl = "http://13.250.53.189:4000";
 
 //ACCESS PANEL
 function handleLogin() {

@@ -1,4 +1,4 @@
-const IndexServerUrl = "http://localhost:4000";
+const IndexServerUrl = "http://13.250.53.189:4000";
 var userId = 0;
 
 //ACCESS PANEL
