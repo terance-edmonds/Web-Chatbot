@@ -1,14 +1,12 @@
-require('dotenv').config()
-const mysql = require('mysql')
+const mysql = require('mysql');
+const config = require('../config/config');
 
 const pool = mysql.createPool({
-    port: process.env.db_port,
-    host     : process.env.DB_HOST,
-    user     : process.env.DB_USER,
-    password : process.env.DB_PWD,
-    database : process.env.DB_NAME,
-    connectionLimit: 10
-  });
+    host     : config.db_host,
+    user     : config.db_user,
+    password : config.db_pwd,
+    database : config.db_name
+});
 
 pool.getConnection((error, connection) => {
     if(error){
@@ -17,8 +15,6 @@ pool.getConnection((error, connection) => {
       }
     }
 })
-
-
 
 // Attempt to catch disconnects 
 pool.on('connection', function (connection) {

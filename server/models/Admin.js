@@ -161,6 +161,7 @@ router.post("/login", (req, res) => {
             ],
             (error, result) => {
                 if(error){
+                    console.log(error)
                     return res.status(500).json({
                         status: "failed",
                         message: 'Database error',
@@ -204,6 +205,7 @@ router.post("/login", (req, res) => {
         )
 
     } catch (error) {
+        
         return res.status(500).json({
             status: "failed",
             message: "Internal Sever Error",
