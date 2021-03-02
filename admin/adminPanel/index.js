@@ -1,4 +1,10 @@
-const IndexServerUrl = "http://13.250.53.189:4000";
+var IndexServerUrl = "";
+
+if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+    IndexServerUrl = "http://52.220.134.60"
+}else{
+    IndexServerUrl = "https://52.220.134.60"
+}
 
 //ACCESS PANEL
 function handleLogin() {

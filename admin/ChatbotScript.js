@@ -1,4 +1,10 @@
-const chatbotServerUrl = "http://13.250.53.189:4000";
+var chatbotServerUrl = "";
+
+if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+    chatbotServerUrl = "http://52.220.134.60"
+}else{
+    chatbotServerUrl = "https://52.220.134.60"
+}
 
 function checkConnection() {
     if(document.getElementById('chatbot__container-wrapper') != null){
