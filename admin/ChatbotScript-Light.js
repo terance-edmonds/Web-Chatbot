@@ -1,4 +1,5 @@
 const chatbotServerUrl = "https://52.220.134.60";
+//const chatbotServerUrl = "http://localhost:4000";
 
 function checkConnection() {
     if(document.getElementById('chatbot__container-wrapper') != null){
@@ -42,7 +43,7 @@ function handleInput() {
         `
 
         scrollDown();
-    
+
         fetch(chatbotServerUrl+"/api/chatbot", {
             method: "POST",
             headers: {
@@ -56,6 +57,11 @@ function handleInput() {
         })
         .then(response => response.json())
         .then(data => {
+
+            if(data.sessionId == 'end session'){
+                sessionStorage.setItem("sessionId", 'end session')
+            }
+
             document.getElementById('chatbot_____typing-indicator-wrapper').remove()
             if(data.response != undefined){
                 container.innerHTML += `<p class="chatbot__response chatbot__message">${data.response}</p>`;
@@ -115,6 +121,11 @@ function handleStartSession() {
 
 function handleChatbot() {
 
+    if(sessionStorage.getItem("sessionId") == 'end session'){
+        handleStartSession()
+        sessionStorage.setItem("sessionId", 'null')
+    }
+    
     let container = document.getElementById('chatbot__container')
     let textbox = document.getElementById('chatbot__input')
 
@@ -486,7 +497,7 @@ async function createChatbot(){
 
         //load the chatbot
          document.body.innerHTML += `
-         <div id="chatbot__container-wrapper">
+         <div id="chatbot__container-wrapper" onfocusout="handleChatbot()">
              <div id="chatbot__container">
                  <div id="chatbot__message-container">
                     <!-- <p class="chatbot__response chatbot__message">Greetings! How can I help you?</p> -->
@@ -501,14 +512,13 @@ async function createChatbot(){
                  <input id="chatbot__input" placeholder="type here...."/>
              </div>
 
-             <svg id="chatbot__icon" onclick="handleChatbot()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1039 1000"><defs><style>.cls-1{fill:#f2f2f2;}.cls-2{fill:#1a1a1a;}.cls-3{fill:none;}.cls-3,.cls-4{stroke:#333;stroke-linecap:round;stroke-linejoin:round;stroke-width:23px;}.cls-4{fill:#333;}.cls-5{fill:#999;}</style></defs><path class="cls-1" d="M1000,500c0,6.52,0,14.53-.58,24.3-12,195-196,475.61-499.42,475.7C228.85,1000.08,0,776.2,0,500S223.86,0,500,0,1000,223.86,1000,500Z"/><path class="cls-2" d="M713.86,675H285.14c-12.13,0-76.66-1.11-128.79-48.77C123.39,596.1,103,554.48,103,508.5h0c0-92,81.55-166.5,182.14-166.5H713.86C814.45,342,896,416.54,896,508.5h0C896,600.46,814.45,675,713.86,675Z"/><circle class="cls-1" cx="308.06" cy="509.07" r="50"/><circle class="cls-1" cx="678.54" cy="509.07" r="50"/><path class="cls-3" d="M992.27,515.05c-39.88,87.88-159.78,320.64-388.08,375.42A421.74,421.74,0,0,1,536.73,901"/><ellipse class="cls-4" cx="503.5" cy="896" rx="53" ry="24.5"/><rect class="cls-5" x="961.5" y="355" width="59.5" height="290.5" rx="18.45"/></svg>
+             <svg id="chatbot__icon" onclick="handleChatbot()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1039 1000"><defs><style>.cls-1{fill:#1a1a1a;}.cls-2{fill:#f2f2f2;}.cls-3{fill:none;}.cls-3,.cls-4{stroke:#e6e6e6;stroke-linecap:round;stroke-linejoin:round;stroke-width:23px;}.cls-4,.cls-5{fill:#e6e6e6;}</style></defs><path class="cls-1" d="M1000,500c0,6.52,0,14.53-.58,24.3-12,195-196,475.61-499.42,475.7C228.85,1000.08,0,776.2,0,500S223.86,0,500,0,1000,223.86,1000,500Z"/><path class="cls-2" d="M713.86,675H285.14c-12.13,0-76.66-1.11-128.79-48.77C123.39,596.1,103,554.48,103,508.5h0c0-92,81.55-166.5,182.14-166.5H713.86C814.45,342,896,416.54,896,508.5h0C896,600.46,814.45,675,713.86,675Z"/><circle class="cls-1" cx="308.06" cy="509.07" r="50"/><circle class="cls-1" cx="678.54" cy="509.07" r="50"/><path class="cls-3" d="M992.27,515.05c-39.88,87.88-159.78,320.64-388.08,375.42A421.74,421.74,0,0,1,536.73,901"/><ellipse class="cls-4" cx="503.5" cy="896" rx="53" ry="24.5"/><rect class="cls-5" x="961.5" y="355" width="59.5" height="290.5" rx="18.45"/></svg>
 
          </div>`
 
 
          if(sessionStorage.getItem("sessionId") == null){
             handleStartSession()
-            console.log(sessionStorage.getItem("sessionId"))
         }
 }
 

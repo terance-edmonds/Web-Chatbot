@@ -1,4 +1,5 @@
 const chatbotServerUrl = "https://52.220.134.60";
+//const chatbotServerUrl = "http://localhost:4000";
 
 function checkConnection() {
     if(document.getElementById('chatbot__container-wrapper') != null){
@@ -42,7 +43,7 @@ function handleInput() {
         `
 
         scrollDown();
-    
+
         fetch(chatbotServerUrl+"/api/chatbot", {
             method: "POST",
             headers: {
@@ -56,6 +57,11 @@ function handleInput() {
         })
         .then(response => response.json())
         .then(data => {
+
+            if(data.sessionId == 'end session'){
+                sessionStorage.setItem("sessionId", 'end session')
+            }
+
             document.getElementById('chatbot_____typing-indicator-wrapper').remove()
             if(data.response != undefined){
                 container.innerHTML += `<p class="chatbot__response chatbot__message">${data.response}</p>`;
@@ -115,6 +121,11 @@ function handleStartSession() {
 
 function handleChatbot() {
 
+    if(sessionStorage.getItem("sessionId") == 'end session'){
+        handleStartSession()
+        sessionStorage.setItem("sessionId", 'null')
+    }
+    
     let container = document.getElementById('chatbot__container')
     let textbox = document.getElementById('chatbot__input')
 

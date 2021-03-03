@@ -57,13 +57,18 @@ const chatbot = async (req, res) => {
 
         if(end_flow != undefined && end_flow != '' && end_flow == 'End Session'){
             //console.log(end_flow)
+            return res.status(200).json({
+                status: "success",
+                response: response,
+                sessionId: 'end session'
+            });
+        }else{
+            return res.status(200).json({
+                status: "success",
+                response: response,
+                sessionId: sessionId
+            });
         }
-
-        return res.status(200).json({
-            status: "success",
-            response: response,
-            sessionId: sessionId
-        });
 
 /*         if (result.intent) {
             return res.status(200).json({
