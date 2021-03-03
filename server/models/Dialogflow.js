@@ -22,7 +22,15 @@ const chatbot = async (req, res) => {
 
 
         // A unique identifier for the given session
-        const sessionId = Math.random().toString(36).substring(7);
+        var sessionId = '';
+
+        if(userData.sessionId == 'null'){
+            sessionId = uuid.v4();
+        }else{
+            sessionId = userData.sessionId
+        }
+
+
         // Create a new session
         const sessionClient = new dialogflow.SessionsClient(config);
         const sessionPath = sessionClient.projectLocationAgentSessionPath(projectId, location, agentId, sessionId);
@@ -51,7 +59,13 @@ const chatbot = async (req, res) => {
             //console.log(end_flow)
         }
 
-        if (result.intent) {
+        return res.status(200).json({
+            status: "success",
+            response: response,
+            sessionId: sessionId
+        });
+
+/*         if (result.intent) {
             return res.status(200).json({
                 status: "success",
                 response: response
@@ -61,7 +75,7 @@ const chatbot = async (req, res) => {
                 status: "failed",
                 response: 'Sorry! nothing found on that.'
             });
-        }   
+        }   */ 
     } catch (error) {
         console.log(error)
         return res.status(500).json({

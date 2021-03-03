@@ -8,6 +8,7 @@ const authorization = require('../Auth/auth');
 const schema = Joi.object().keys({
     token: Joi.string().required(),
     message: Joi.string().required(),
+    sessionId: Joi.string().required(),
 })
 
 const schema1 = Joi.object().keys({
@@ -58,7 +59,8 @@ router.post("/chatbot", (req, res) => {
                         let data = {
                             body: {
                                 credentials: result[0].credentials,
-                                message: userData.message
+                                message: userData.message,
+                                sessionId: userData.sessionId
                             }
                         }
 
